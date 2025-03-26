@@ -1,0 +1,57 @@
+# код для создания БД
+
+-- Таблица авторов
+CREATE TABLE автор (
+    код_автора SERIAL PRIMARY KEY,
+    ник_автора TEXT NOT NULL
+);
+
+-- Таблица вселенных
+CREATE TABLE вселенные (
+    код_вселенной SERIAL PRIMARY KEY,
+    название_вселенной TEXT NOT NULL,
+    изображение TEXT
+);
+
+-- Таблица видов
+CREATE TABLE вид (
+    код_вида SERIAL PRIMARY KEY,
+    код_автора INT REFERENCES автор(код_автора) ON DELETE SET NULL,
+    название_расы TEXT NOT NULL,
+    наличие_магии BOOLEAN DEFAULT FALSE,
+    увм TEXT,
+    изображение TEXT
+);
+
+-- Таблица регионов
+CREATE TABLE регион (
+    код_региона SERIAL PRIMARY KEY,
+    код_автора INT REFERENCES автор(код_автора) ON DELETE SET NULL,
+    название_региона TEXT NOT NULL,
+    столица_региона TEXT,
+    форма_правления TEXT,
+    правитель TEXT,
+    аналогичные_страны TEXT,
+    предложение_региона TEXT,
+    изображение TEXT
+);
+
+-- Таблица персонажей
+CREATE TABLE персонаж (
+    код_персонажа SERIAL PRIMARY KEY,
+    код_автора INT REFERENCES автор(код_автора) ON DELETE SET NULL,
+    имя TEXT NOT NULL,
+    фамилия TEXT,
+    возраст INT CHECK (возраст >= 0),
+    владение_магией BOOLEAN DEFAULT FALSE,
+    изображение TEXT
+);
+
+-- Таблица связей (учёт)
+CREATE TABLE учет (
+    код_вселенной INT REFERENCES вселенные(код_вселенной) ON DELETE CASCADE,
+    код_персонажа INT REFERENCES персонаж(код_персонажа) ON DELETE CASCADE,
+    код_вида INT REFERENCES вид(код_вида) ON DELETE SET NULL,
+    код_региона INT REFERENCES регион(код_региона) ON DELETE SET NULL,
+    PRIMARY KEY (код_персонажа, код_вселенной)
+);
